@@ -46,7 +46,7 @@ export default class WebSocketServer extends EventEmitter {
 
       this.clients.add(socket);
       socket.write(responseHeaders.concat("\r\n").join("\r\n"));
-
+      
       socket.on("data", (buffer) =>
         this.emit("data", this.parseFrame(buffer), (data) =>
           socket.write(this.createFrame(data))

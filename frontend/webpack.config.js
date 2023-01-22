@@ -3,9 +3,11 @@ const { merge } = require("webpack-merge");
 const common = require("./webpack.common.js");
 const webpack = require("webpack");
 const CompressionPlugin = require("compression-webpack-plugin")
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
 module.exports = merge(common, {
   entry: {
-    tasks: { import: "./src/index.ts", filename: "./build.js" },
+    tasks: { import: "./src/index.tsx", filename: "./build.js" },
    
   },
   mode: "production",
@@ -13,10 +15,10 @@ module.exports = merge(common, {
   devServer: {
     // configuration for webpack-dev-server
     historyApiFallback: true,
-
-    overlay: true,
+    watchFiles: path.join(__dirname, 'src'),
     port: 8080, // port to run dev-server
   },
+
   devtool: "inline-source-map",
   plugins : [
     new CompressionPlugin({
@@ -24,6 +26,10 @@ module.exports = merge(common, {
     
       algorithm: "gzip",
       deleteOriginalAssets: false,
-    })
+    }),
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'src', 'template.html'),
+      filename: 'index.html',
+    }),
   ]
 });
