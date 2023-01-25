@@ -5,12 +5,12 @@ export default class WebSocketServer extends EventEmitter {
   static OPCODES = { text: 0x01, close: 0x08 };
   constructor(options = {}) {
     super();
-   
+
     this._server = null;
-   
+
     this.clients = new Set();
     this.port = options.port || 8080;
-    this.GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+    this.GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
     this._init();
   }
   _init() {
@@ -46,7 +46,7 @@ export default class WebSocketServer extends EventEmitter {
 
       this.clients.add(socket);
       socket.write(responseHeaders.concat("\r\n").join("\r\n"));
-      
+
       socket.on("data", (buffer) =>
         this.emit("data", this.parseFrame(buffer), (data) =>
           socket.write(this.createFrame(data))
@@ -136,7 +136,10 @@ export default class WebSocketServer extends EventEmitter {
     for (let i = 0; i < payload.byteLength; ++i) {
       const j = i % 4;
       const maskingKeyByteShift = j === 3 ? 0 : (3 - j) << 3;
-      const maskingKeyByte = (maskingKeyByteShift === 0 ? maskingKey : maskingKey >>> maskingKeyByteShift) & 0b11111111;
+      const maskingKeyByte =
+        (maskingKeyByteShift === 0
+          ? maskingKey
+          : maskingKey >>> maskingKeyByteShift) & 0b11111111;
       const transformedByte = maskingKeyByte ^ payload.readUInt8(i);
       result.writeUInt8(transformedByte, i);
     }

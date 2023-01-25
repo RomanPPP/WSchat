@@ -1,9 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-
+import { Container } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import { ThemeProvider } from "@mui/material/styles";
 import Layout from "./Layout";
-
+import MessageItem from "./MessageItem";
+import MessageInputBox from "./MessageInputBox";
 import { useParams } from "react-router-dom";
-import { IMessage } from '../../models/IMessage'
+import { IMessage } from "../../models/IMessage";
+import theme from "../themes";
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isConnectionOpen, setConnectionOpen] = useState(false);
@@ -11,8 +16,7 @@ export default function ChatPage() {
 
   const { username } = useParams();
 
-  const ws = React.useRef<WebSocket>();
-
+  const ws = useRef<WebSocket>();
 
   const sendMessage = () => {
     if (messageBody) {
@@ -26,17 +30,15 @@ export default function ChatPage() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     ws.current = new WebSocket("ws://localhost:4000");
-
 
     ws.current.onopen = () => {
       console.log("Connection opened");
       setConnectionOpen(true);
     };
 
-
-    ws.current.onmessage = (event : MessageEvent) => {
+    ws.current.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       setMessages((_messages) => [..._messages, data]);
     };
@@ -49,72 +51,70 @@ export default function ChatPage() {
 
   const scrollTarget = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (scrollTarget.current) {
       scrollTarget.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages.length]);
 
   return (
-    <Layout>
-      <div id="chat-view-container" className="flex flex-col w-1/3">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`my-3 rounded py-3 w-1/3 text-white ${
-              message.sender === username
-                ? "self-end bg-purple-600"
-                : "bg-blue-600"
-            }`}
+    <ThemeProvider theme={theme}>
+      <Layout>
+        <Grid
+          container
+          direction="column"
+          sx={{
+            height: "100%",
+          }}
+        >
+          <Grid
+            xs={12}
+            sx={{
+              height: "80%",
+              overflow: "scroll",
+              "&::-webkit-scrollbar": { display: "none" },
+            }}
           >
-            <div className="flex items-center">
-              <div className="ml-2">
-                <div className="flex flex-row">
-                  <div className="text-sm font-medium leading-5 text-gray-900">
-                    {message.sender} at
-                  </div>
-                  <div className="ml-1">
-                    <div className="text-sm font-bold leading-5 text-gray-900">
-                      {new Date(message.sentAt).toLocaleTimeString(undefined, {
-                        timeStyle: "short",
-                      })}{" "}
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-1 text-sm font-semibold leading-5">
-                  {message.body}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-        <div ref={scrollTarget} />
-      </div>
-      <footer className="w-1/3">
-        <p>
-          You are chatting as <span className="font-bold">{username}</span>
-        </p>
+            <Container>
+              <Grid container spacing={6}>
+                {messages.map((message, index) => (
+                  <Grid
+                    xs={8}
+                    key={index}
+                    xsOffset={message.sender === username ? 0 : 3}
+                  >
+                    <MessageItem message={message}></MessageItem>
+                  </Grid>
+                ))}
 
-        <div className="flex flex-row">
-          <input
-            id="message"
-            type="text"
-            className="w-full border-2 border-gray-200 focus:outline-none rounded-md p-2 hover:border-purple-400"
-            placeholder="Type your message here..."
-            value={messageBody}
-            onChange={(e) => setMessageBody(e.target.value)}
-            required
-          />
-          <button
-            aria-label="Send"
-            onClick={sendMessage}
-            className="m-3"
-            disabled={!isConnectionOpen}
+                <div ref={scrollTarget} />
+              </Grid>
+            </Container>
+          </Grid>
+          <Grid
+            xs={12}
+            sx={{
+              height: "20%",
+              bgcolor: "common.black",
+              color: "primary.contrastText",
+            }}
           >
-            send
-          </button>
-        </div>
-      </footer>
-    </Layout>
+            <Container
+              sx={{
+                padding: "5px",
+              }}
+            >
+              <MessageInputBox
+                username={username}
+                sendMessage={sendMessage}
+                setMessageBody={setMessageBody}
+                disabled={!isConnectionOpen}
+                messageBody={messageBody}
+              ></MessageInputBox>
+            </Container>
+          </Grid>
+        </Grid>
+      </Layout>
+    </ThemeProvider>
   );
 }

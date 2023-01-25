@@ -1,4 +1,5 @@
 {
+  "type" : "module",
   "scripts": {
     "build": "rimraf ./build && npx tsc",
     "start": "npm run build && node build/index.mjs",

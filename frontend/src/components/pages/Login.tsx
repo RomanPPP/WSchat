@@ -1,6 +1,9 @@
 import * as React from "react";
+import { Box, Button, Typography, TextField } from "@mui/material";
+
 import { useNavigate } from "react-router";
 import Layout from "./Layout";
+import { Container } from "@mui/system";
 export default function LoginPage() {
   const navigate = useNavigate();
 
@@ -14,32 +17,39 @@ export default function LoginPage() {
 
   return (
     <Layout>
-      <form>
-        <div>
-          <label htmlFor="username">
-            Type the username you'll use in the chat
-          </label>
-          <input
-            id="username"
-            type="text"
-            placeholder="Your name or nickname"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <div></div>
-          <div>
-            <button
-             type="button"
-              onClick={handleSubmit}
-            >
-              Log in the chat
-            </button>
-          </div>
-        </div>
-      </form>
+      <Container>
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <Box component="form" noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Username"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              id="username"
+              type="text"
+              placeholder="Your name or nickname"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </Box>
+          <Button type="button" onClick={handleSubmit}>
+            Log in the chat
+          </Button>
+        </Box>
+      </Container>
     </Layout>
   );
 }

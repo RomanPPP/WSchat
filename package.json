@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "dev_backend": "cd backend && npx nodemon",
+        "dev_frontend": "cd frontend && npm run dev "
+    }
+}
